@@ -53,6 +53,9 @@ SimpleLoader<SavedModelBundle>::CreatorVariant
 SavedModelBundleSourceAdapter::GetServableCreator(
     std::shared_ptr<SavedModelBundleFactory> bundle_factory,
     const StoragePath& path) const {
+
+  LOG(INFO) << "GetServableCreator";
+
   if (bundle_factory->config().enable_session_metadata()) {
     return [bundle_factory, path](const Loader::Metadata& metadata,
                                   std::unique_ptr<SavedModelBundle>* bundle) {
