@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./tools/run_in_docker.sh -d tensorflow/serving:2.18.0-devel bazel build --copt=-mavx tensorflow_serving/...
