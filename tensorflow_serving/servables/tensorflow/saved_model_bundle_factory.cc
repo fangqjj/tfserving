@@ -142,6 +142,12 @@ Status SavedModelBundleFactory::InternalCreateSavedModelBundle(
       }
     }
     if (metadata.has_value()) {
+      LOG(INFO) 
+          << "InternalCreateSavedModelBundle with metadata: "
+          << metadata->servable_id.name
+          << ", "
+          << metadata->servable_id.version;
+
       auto* session_metadata =
           result.config.mutable_experimental()->mutable_session_metadata();
       session_metadata->set_name(metadata->servable_id.name);
