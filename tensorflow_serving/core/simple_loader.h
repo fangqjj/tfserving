@@ -306,9 +306,9 @@ template <typename ServableType>
 Status SimpleLoader<ServableType>::LoadWithMetadata(const Metadata& metadata) {
   LOG(INFO) 
       << "LoadWithMetadata: "
-      << metadata->servable_id.name
+      << metadata.servable_id.name
       << ", "
-      << metadata->servable_id.version;
+      << metadata.servable_id.version;
 
   if (absl::holds_alternative<CreatorWithMetadata>(creator_variant_)) {
     TF_RETURN_IF_ERROR(
