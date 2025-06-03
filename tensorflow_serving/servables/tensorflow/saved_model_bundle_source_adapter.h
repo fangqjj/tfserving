@@ -50,10 +50,6 @@ class SavedModelBundleSourceAdapter final
       std::shared_ptr<SavedModelBundleFactory> bundle_factory,
       const StoragePath& path) const;
 
-  Status PostProcessSavedModelBundle(
-      const Loader::Metadata& metadata, 
-      std::unique_ptr<SavedModelBundle>* bundle);
-
   Status Convert(const StoragePath& path,
                  std::unique_ptr<Loader>* loader) override;
 
@@ -63,6 +59,10 @@ class SavedModelBundleSourceAdapter final
 
   TF_DISALLOW_COPY_AND_ASSIGN(SavedModelBundleSourceAdapter);
 };
+
+Status PostProcessSavedModelBundle(
+    const Loader::Metadata& metadata, 
+    std::unique_ptr<SavedModelBundle>* bundle);
 
 }  // namespace serving
 }  // namespace tensorflow

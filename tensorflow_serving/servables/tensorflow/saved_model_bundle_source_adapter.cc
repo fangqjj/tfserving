@@ -89,7 +89,7 @@ SavedModelBundleSourceAdapter::GetServableCreator(
   };
 }
 
-Status SavedModelBundleSourceAdapter::PostProcessSavedModelBundle(
+Status PostProcessSavedModelBundle(
     const Loader::Metadata& metadata, 
     std::unique_ptr<SavedModelBundle>* bundle) {
 
