@@ -53,15 +53,13 @@ SimpleLoader<SavedModelBundle>::CreatorVariant
 SavedModelBundleSourceAdapter::GetServableCreator(
     std::shared_ptr<SavedModelBundleFactory> bundle_factory,
     const StoragePath& path) const {
-
-  LOG(INFO) << "GetServableCreator";
-
   if (bundle_factory->config().enable_session_metadata()) {
     return [bundle_factory, path](const Loader::Metadata& metadata,
                                   std::unique_ptr<SavedModelBundle>* bundle) {
       TF_RETURN_IF_ERROR(RegisterModelRoot(metadata.servable_id, path));
       TF_RETURN_IF_ERROR(bundle_factory->CreateSavedModelBundleWithMetadata(
           metadata, path, bundle));
+      TF_RETURN_IF_ERROR(PostProcessSavedModelBundle(metadata, bundle));
       MaybePublishMLMDStreamz(path, metadata.servable_id.name,
                               metadata.servable_id.version);
       if (bundle_factory->config().enable_model_warmup()) {
@@ -78,8 +76,10 @@ SavedModelBundleSourceAdapter::GetServableCreator(
       return absl::OkStatus();
     };
   }
-  return [bundle_factory, path](std::unique_ptr<SavedModelBundle>* bundle) {
+  return [bundle_factory, path](const Loader::Metadata& metadata,
+                                std::unique_ptr<SavedModelBundle>* bundle) {
     TF_RETURN_IF_ERROR(bundle_factory->CreateSavedModelBundle(path, bundle));
+    TF_RETURN_IF_ERROR(PostProcessSavedModelBundle(metadata, bundle));
     if (bundle_factory->config().enable_model_warmup()) {
       return RunSavedModelWarmup(
           bundle_factory->config().model_warmup_options(),
@@ -87,6 +87,19 @@ SavedModelBundleSourceAdapter::GetServableCreator(
     }
     return absl::OkStatus();
   };
+}
+
+Status SavedModelBundleSourceAdapter::PostProcessSavedModelBundle(
+    const Loader::Metadata& metadata, 
+    std::unique_ptr<SavedModelBundle>* bundle) {
+
+  LOG(INFO)
+      << "PostProcessSavedModelBundle with metadata: "
+      << metadata.servable_id.name
+      << ", "
+      << metadata.servable_id.version;
+  
+  return absl::OkStatus();
 }
 
 Status SavedModelBundleSourceAdapter::Convert(const StoragePath& path,
