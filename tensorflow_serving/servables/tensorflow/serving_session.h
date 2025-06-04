@@ -140,7 +140,7 @@ class CustomizedServingSessionWrapper : public ServingSessionWrapper {
   PreProcessingFunction fn_;
 
   TF_DISALLOW_COPY_AND_ASSIGN(CustomizedServingSessionWrapper);
-}
+};
 
 // Subclass of SessionWrapper which reroutes Run() calls with
 // thread_pool_options to Run() without those options.  This is to provide
