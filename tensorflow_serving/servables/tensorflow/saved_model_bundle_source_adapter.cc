@@ -29,6 +29,7 @@ limitations under the License.
 #include "tensorflow_serving/servables/tensorflow/machine_learning_metadata.h"
 #include "tensorflow_serving/servables/tensorflow/saved_model_bundle_factory.h"
 #include "tensorflow_serving/servables/tensorflow/saved_model_warmup.h"
+#include "tensorflow_serving/servables/tensorflow/serving_session.h"
 
 namespace tensorflow {
 namespace serving {
@@ -92,12 +93,12 @@ SavedModelBundleSourceAdapter::GetServableCreator(
 Status PostProcessSavedModelBundle(
     const Loader::Metadata& metadata, 
     std::unique_ptr<SavedModelBundle>* bundle) {
-
-  LOG(INFO)
-      << "PostProcessSavedModelBundle with metadata: "
-      << metadata.servable_id.name
-      << ", "
-      << metadata.servable_id.version;
+  std::unique_ptr<Session>* session = &(*bundle)->session;
+  session->reset(
+      new CustomizedServingSessionWrapper(std::move(*session),
+      [](const std::vector<std::pair<string, Tensor>>& inputs) {
+        LOG(INFO) << "PreProcessingFunction";
+      }));
   
   return absl::OkStatus();
 }
