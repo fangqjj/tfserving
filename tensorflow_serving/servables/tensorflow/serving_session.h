@@ -112,6 +112,7 @@ class CustomizedServingSessionWrapper : public ServingSessionWrapper {
              const std::vector<string>& output_tensor_names,
              const std::vector<string>& target_node_names,
              std::vector<Tensor>* outputs) override {
+    TF_RETURN_IF_ERROR(fn_(inputs));
     return ServingSessionWrapper::Run(inputs, output_tensor_names, target_node_names,
                                       outputs);
   }
@@ -121,6 +122,7 @@ class CustomizedServingSessionWrapper : public ServingSessionWrapper {
              const std::vector<string>& output_tensor_names,
              const std::vector<string>& target_node_names,
              std::vector<Tensor>* outputs, RunMetadata* run_metadata) override {
+    TF_RETURN_IF_ERROR(fn_(inputs));
     return ServingSessionWrapper::Run(run_options, inputs, output_tensor_names,
                                       target_node_names, outputs, run_metadata);
   }
@@ -131,6 +133,7 @@ class CustomizedServingSessionWrapper : public ServingSessionWrapper {
              const std::vector<string>& target_node_names,
              std::vector<Tensor>* outputs, RunMetadata* run_metadata,
              const thread::ThreadPoolOptions& thread_pool_options) override {
+    TF_RETURN_IF_ERROR(fn_(inputs));
     return ServingSessionWrapper::Run(run_options, inputs, output_tensor_names,
                                       target_node_names, outputs, run_metadata,
                                       thread_pool_options);
