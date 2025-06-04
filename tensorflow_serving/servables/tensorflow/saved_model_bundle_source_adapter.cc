@@ -98,6 +98,7 @@ Status PostProcessSavedModelBundle(
       new CustomizedServingSessionWrapper(std::move(*session),
       [](const std::vector<std::pair<string, Tensor>>& inputs) {
         LOG(INFO) << "PreProcessingFunction";
+        return absl::OkStatus();
       }));
   
   return absl::OkStatus();

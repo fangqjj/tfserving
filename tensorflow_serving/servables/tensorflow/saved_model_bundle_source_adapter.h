@@ -60,6 +60,10 @@ class SavedModelBundleSourceAdapter final
   TF_DISALLOW_COPY_AND_ASSIGN(SavedModelBundleSourceAdapter);
 };
 
+Status PostProcessSavedModelBundle(
+    const Loader::Metadata& metadata, 
+    std::unique_ptr<SavedModelBundle>* bundle);
+
 }  // namespace serving
 }  // namespace tensorflow
 
