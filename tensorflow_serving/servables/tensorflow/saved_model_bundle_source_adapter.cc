@@ -34,6 +34,32 @@ limitations under the License.
 namespace tensorflow {
 namespace serving {
 
+namespace {
+
+Status HalfPlusTwoFn(const std::vector<std::pair<string, Tensor>>& inputs) {
+  LOG(INFO) << "HalfPlusTwoFn";
+  return absl::OkStatus();
+}
+
+std::unordered_map<std::string, CustomizedServingSessionWrapper::PreProcessingFunction> registedFn_ = {
+  {"half_plus_two", HalfPlusTwoFn}
+};
+
+Status PostProcessSavedModelBundle(
+    const Loader::Metadata& metadata, 
+    std::unique_ptr<SavedModelBundle>* bundle) {
+  if (auto search = registedFn_.find(metadata.servable_id.name); search != registedFn_.end()) {
+    std::unique_ptr<Session>* session = &(*bundle)->session;
+    session->reset(
+        new CustomizedServingSessionWrapper(std::move(*session),
+        search->second));
+  }
+  
+  return absl::OkStatus();
+}
+
+}  // namespace
+
 Status SavedModelBundleSourceAdapter::Create(
     const SavedModelBundleSourceAdapterConfig& config,
     std::unique_ptr<SavedModelBundleSourceAdapter>* adapter) {
@@ -88,20 +114,6 @@ SavedModelBundleSourceAdapter::GetServableCreator(
     }
     return absl::OkStatus();
   };
-}
-
-Status PostProcessSavedModelBundle(
-    const Loader::Metadata& metadata, 
-    std::unique_ptr<SavedModelBundle>* bundle) {
-  std::unique_ptr<Session>* session = &(*bundle)->session;
-  session->reset(
-      new CustomizedServingSessionWrapper(std::move(*session),
-      [](const std::vector<std::pair<string, Tensor>>& inputs) {
-        LOG(INFO) << "PreProcessingFunction";
-        return absl::OkStatus();
-      }));
-  
-  return absl::OkStatus();
 }
 
 Status SavedModelBundleSourceAdapter::Convert(const StoragePath& path,
